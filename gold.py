@@ -92,27 +92,56 @@ train_dataloader, test_dataloader = preprocess_gold(df)
 #        return x
 
 #Define a LSTM model
-class goldrate_predictorlstm(nn.Module):
-    def __init__(self):
-        super(goldrate_predictorlstm, self).__init__()
-        # LSTM layer with input size 5 (number of features), hidden size 5, single layer
-        self.lstm1 = nn.LSTM(input_size=5, hidden_size=5, num_layers=1, batch_first=True)
-        # Final linear layer to produce single output prediction
-        self.fn3 = nn.Linear(5, 1)
-        
-    def forward(self, x):
-        # Add a time dimension to input tensor (batch_size, 1, features)
-        x = x.unsqueeze(1)
-        # Pass through LSTM layer, ignoring hidden state
-        out, _ = self.lstm1(x)
-        # Remove time dimension since we only have one timestep
-        out = out.squeeze(1)
-        # Final linear layer to get prediction
-        out = self.fn3(out)
-        return out
+#class goldrate_predictorlstm(nn.Module):
+#    def __init__(self):
+#        super(goldrate_predictorlstm, self).__init__()
+#        # LSTM layer with input size 5 (number of features), hidden size 5, single layer
+#        self.lstm1 = nn.LSTM(input_size=5, hidden_size=5, num_layers=1, batch_first=True)
+#        # Final linear layer to produce single output prediction
+#        self.fn3 = nn.Linear(5, 1)
+#        
+#    def forward(self, x):
+#        # Add a time dimension to input tensor (batch_size, 1, features)
+#        x = x.unsqueeze(1)
+#        # Pass through LSTM layer, ignoring hidden state
+#        out, _ = self.lstm1(x)
+#        # Remove time dimension since we only have one timestep
+#        out = out.squeeze(1)
+#        # Final linear layer to get prediction
+#        out = self.fn3(out)
+#        return out
 
+
+#Define a GRU model
+class goldrate_predictorgru(nn.Module):
+    """
+    A Gated Recurrent Unit (GRU) neural network model for gold rate prediction.
+    
+    Architecture:
+    - Single GRU layer with 5 input features and 10 hidden units
+    - Linear layer to produce final prediction
+    """
+    def __init__(self):
+        super(goldrate_predictorgru, self).__init__()
+        # GRU layer with input size 5 (features), hidden size 10, single layer
+        self.gru1 = nn.GRU(input_size=5,hidden_size=10, num_layers=1, batch_first=True)
+        # Final linear layer to produce single output prediction
+        self.fn = nn.Linear(10,1)
+    
+    def forward(self, x):
+        # Reshape input to (batch_size, sequence_length=1, features=5)
+        x = x.view(-1, 1, 5)
+        # Pass through GRU layer, ignore hidden state
+        x, _ = self.gru1(x)
+        # Take final output and pass through linear layer
+        x = self.fn(x[:, -1, :])
+        return x
+
+# Choose the model, either NN, LSTM, or GRU, and uncomment the corresponding class definition. 
+# At the moment, the GRU model is chosen.
 #model = goldrate_predictorNN()
-model = goldrate_predictorlstm()
+#model = goldrate_predictorlstm()
+model = goldrate_predictorgru()
 
 criterion = nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr = 0.001)
