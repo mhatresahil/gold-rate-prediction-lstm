@@ -73,13 +73,6 @@ The table below summarizes the performance of each model after 100 epochs:
 4. **Train-Test Split**: 75% of the data was used for training, and 25% was reserved for testing.
 5. **Batching**: Data was converted to PyTorch tensors and DataLoaders were created for training and testing.
 
-### Training
-- Models were trained for 100 epochs using the Adam optimizer with a learning rate of 0.001.
-- Loss was computed using Mean Squared Error (MSE).
-
-### Evaluation
-- Average test loss was computed using the test DataLoader.
-- Loss curves for training were plotted over 100 epochs.
 
 ---
 
